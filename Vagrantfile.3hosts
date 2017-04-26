@@ -52,6 +52,9 @@ Vagrant.configure(2) do |config|
             end
         end
     end
+  config.vm.provision "shell",
+    run: "once",
+    inline: "mkdir -p /etc/pve/priv && touch /etc/pve/priv/authorized_keys"
   # default router
   config.vm.provision "shell",
     run: "always",
@@ -61,6 +64,5 @@ Vagrant.configure(2) do |config|
     sed -i 's/192.168.2./"+$net+"/g' /usr/local/bin/va_ceph.conf && \
     sed -i 's/ip01=11/ip01="+$ip01+"/g' /usr/local/bin/va_hosts4ssh && \
     sed -i 's/ip02=12/ip02="+$ip02+"/g' /usr/local/bin/va_hosts4ssh && \
-    sed -i 's/ip03=13/ip03="+$ip03+"/g' /usr/local/bin/va_hosts4ssh && \
-    mkdir -p /etc/pve/priv && touch /etc/pve/priv/authorized_keys"
+    sed -i 's/ip03=13/ip03="+$ip03+"/g' /usr/local/bin/va_hosts4ssh"
 end
