@@ -1,0 +1,143 @@
+{
+  "variables": {
+    "atlas_username": "42n4",
+    "atlas_name": "proxmoxbeta",
+    "version": "0.1",
+    "iso_url": "https://www.proxmox.com/en/downloads?task=callelement&format=raw&item_id=322&element=f85c494b-2b32-4109-b8c1-083cca2b7db6&method=download&args[0]=3c018023c7aa81c9bed2d4497c702559",
+    "iso_checksum": "a722c04a9c29a2c9d9407d288b93678e51456d1276c0eca5e84b9582a0fe44db",
+    "iso_checksum_type": "sha256",
+    "boot_wait": "5s",
+    "disk_size": "32768",
+    "http_directory": "http",
+    "hostname": "server1.localdomain",
+    "domain": "localdomain",
+    "email": "piotrwasiewiczeu@gmail.com",
+    "ssh_username": "root",
+    "ssh_password": "packer",
+    "ssh_wait_timeout": "3600s",
+    "shutdown_command": "shutdown -P now",
+    "headless": "true",
+    "vm_dir": "/mnt/dc/VBox"
+  },
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "guest_os_type": "Debian_64",
+      "vm_name": "{{user `atlas_name`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "boot_command": "<enter><wait10><wait10><wait10><wait10><enter><wait><enter><wait>Poland<tab><tab><tab><enter>{{ user `ssh_password`}}<tab>{{ user `ssh_password`}}<tab>{{ user `email`}}<tab><enter>{{ user `hostname`}}.{{user `domain`}}<tab><tab><tab><tab><tab><enter><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><enter><enter>",
+      "boot_wait": "{{user `boot_wait`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "http_directory": "http",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_wait_timeout": "{{user `ssh_wait_timeout`}}",
+      "shutdown_command": "{{user `shutdown_command`}}",
+      "headless": "{{user `headless`}}",
+      "vboxmanage": [
+	[ "modifyvm", "{{.Name}}", "--memory", "2560" ],
+      	[ "modifyvm", "{{.Name}}", "--cpus", "2" ],
+        [ "modifyvm", "{{.Name}}", "--vram", "128"],
+    	[ "createhd", "--format", "VMDK", "--filename", "{{user `vm_dir`}}/{{user `atlas_name`}}/{{user `atlas_name`}}_2.vmdk", "--variant", "STREAM", "--size", "8192" ],
+	[ "storagectl", "{{.Name}}", "--name", "SATA Controller", "--add", "sata", "--controller", "IntelAHCI"],
+    	[ "storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "{{user `vm_dir`}}/{{user `atlas_name`}}/{{user `atlas_name`}}_2.vmdk" ]
+      ]
+    },
+    {
+      "type": "vmware-iso",
+      "guest_os_type": "ubuntu-64",
+      "vm_name": "{{user `atlas_name`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "boot_command": "{{user `boot_command`}} preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<enter>",
+      "boot_wait": "{{user `boot_wait`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "http_directory": "http",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_wait_timeout": "{{user `ssh_wait_timeout`}}",
+      "shutdown_command": "{{user `shutdown_command`}}",
+      "headless": "{{user `headless`}}"
+    },
+    {
+      "type": "qemu",
+      "vm_name": "{{user `atlas_name`}}",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "boot_command": "{{user `boot_command`}} preseed/url=http://{{ .HTTPIP }}:{{ .HTTPPort }}/preseed.cfg<enter>",
+      "boot_wait": "{{user `boot_wait`}}",
+      "disk_size": "{{user `disk_size`}}",
+      "http_directory": "http",
+      "ssh_username": "{{user `ssh_username`}}",
+      "ssh_password": "{{user `ssh_password`}}",
+      "ssh_wait_timeout": "{{user `ssh_wait_timeout`}}",
+      "shutdown_command": "{{user `shutdown_command`}}",
+      "headless": "{{user `headless`}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "scripts/base.sh",
+        "scripts/vagrant.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "script": "scripts/vmguest.sh",
+      "only": ["virtualbox-iso", "vmware-iso"]
+    },
+    {
+      "type": "shell",
+      "script": "scripts/cleanup.sh"
+    }
+  ],
+  "post-processors": [
+    [
+      {
+        "type": "vagrant",
+        "vagrantfile_template": "vagrantfile.template",
+        "keep_input_artifact": false
+      },
+      {
+        "type": "atlas",
+        "only": ["vmware-iso"],
+        "artifact": "{{user `atlas_username`}}/{{user `atlas_name`}}",
+        "artifact_type": "vagrant.box",
+        "metadata": {
+          "provider": "vmware_desktop",
+          "version": "{{user `version`}}"
+        }
+      },
+      {
+        "type": "atlas",
+        "only": ["qemu"],
+        "artifact": "{{user `atlas_username`}}/{{user `atlas_name`}}",
+        "artifact_type": "vagrant.box",
+        "metadata": {
+          "provider": "libvirt",
+          "version": "{{user `version`}}"
+        }
+      },
+      {
+        "type": "atlas",
+        "only": ["virtualbox-iso"],
+        "artifact": "{{user `atlas_username`}}/{{user `atlas_name`}}",
+        "artifact_type": "vagrant.box",
+        "metadata": {
+          "provider": "virtualbox",
+          "version": "{{user `version`}}"
+        }
+      }
+    ]
+  ],
+  "push": {
+    "name": "{{user `atlas_username`}}/{{user `atlas_name`}}",
+    "vcs": true
+  }
+}

@@ -1,0 +1,72 @@
+$ip01="71"
+$ip02="72"
+$ip03="73"
+#in MSWin it gives you names: VBoxManage.exe list bridgedifs
+#$bridge = "Intel(R) Ethernet Connection (2) I219-V"
+$bridge = "enp0s31f6"
+#$bridge="wlp3s0"
+#$box = "42n4/UbuntuServerYakkety"
+$box="vProxmox"
+$net="192.168.2."
+servers=[
+  {
+    :hostname => "server1",
+    :ip => $net+$ip01,
+    :bridge => $bridge,
+    :box => $box,
+    :ram => 2048,
+    :cpu => 2,
+    :mac => "02002751a1bc"
+  },
+  {
+    :hostname => "server2",
+    :ip => $net+$ip02,
+    :bridge => $bridge,
+    :box => $box,
+    :ram => 2048,
+    :cpu => 2,
+    :mac => "0200272864d1"
+  },
+  {
+    :hostname => "server3",
+    :ip => $net+$ip03,
+    :bridge => $bridge,
+    :box => $box,
+    :ram => 2048,
+    :cpu => 2,
+    :mac => "020027092383"
+  }
+]
+Vagrant.configure(2) do |config|
+    servers.each do |machine|
+        config.vm.define machine[:hostname] do |node|
+            node.vm.box = machine[:box]
+            node.vm.hostname = machine[:hostname]
+            node.vm.network "public_network", bridge: machine[:bridge] ,ip: machine[:ip], mac: machine[:mac]
+	    node.vm.network "forwarded_port", guest: 8006, host: 8006 if machine[:hostname] == "server1"
+	    node.vm.network "forwarded_port", guest: 8006, host: 8016 if machine[:hostname] == "server2"
+	    node.vm.network "forwarded_port", guest: 8006, host: 8026 if machine[:hostname] == "server3"
+            node.vm.provider "virtualbox" do |vb|
+                vb.customize ["modifyvm", :id, "--memory", machine[:ram]]
+                vb.customize ["modifyvm", :id, "--nic2", "bridged",  "--nictype2", "82540EM", "--bridgeadapter2", machine[:bridge], "--cableconnected2", "on", "--nicpromisc2", "allow-all" ]
+            end
+        end
+    end
+  #config.vm.provision "shell",
+  #  run: "once",
+  #  inline: "cp /usr/local/bin/va_interfaces /etc/network/interfaces && \
+  #  export IP=`ifconfig enp0s8 | grep 'inet ' | awk '{ print $2}'` && \
+  #  sed -i 's/192.168.2.71/'${IP}'/g' /etc/network/interfaces && \
+  #  mkdir -p /etc/pve/priv && touch /etc/pve/priv/authorized_keys"
+  # default router
+  config.vm.provision "shell",
+    run: "always",
+    inline: "route add default gw "+$net+"1 && \
+    eval `route -n | awk '{ if ($8 ==\"enp0s3\" && $2 != \"0.0.0.0\") print \"route del default gw \" $2; }'` && \
+    sed -i 's/192.168.2./"+$net+"/g' /usr/local/bin/va_hosts4ssh && \
+    sed -i 's/192.168.2./"+$net+"/g' /usr/local/bin/va_ceph.conf && \
+    sed -i 's/ip01=11/ip01="+$ip01+"/g' /usr/local/bin/va_hosts4ssh && \
+    sed -i 's/ip02=12/ip02="+$ip02+"/g' /usr/local/bin/va_hosts4ssh && \
+    sed -i 's/ip03=13/ip03="+$ip03+"/g' /usr/local/bin/va_hosts4ssh && \
+    mkdir -p /etc/pve/priv && touch /etc/pve/priv/authorized_keys"
+end
