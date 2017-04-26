@@ -76,6 +76,8 @@ ae "rm -f /etc/network/interfaces && cp ~/interfaces /etc/network/interfaces" &&
 ae "cat /etc/network/interfaces"
 ```
 
+`vagrant halt -f && vagrant up`
+
 ## Release setup
 
 Vagrant images at [Atlas](https://atlas.hashicorp.com) are released by [Circle CI](https://circleci.com/).
