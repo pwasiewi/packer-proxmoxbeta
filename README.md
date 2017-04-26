@@ -1,20 +1,20 @@
-# packer-ubuntu
+# packer-proxmoxbeta
 
-[![CircleCI](https://img.shields.io/circleci/project/pwasiewi/packer-ubuntu.svg?maxAge=2592000)](https://circleci.com/gh/pwasiewi/packer-ubuntu)
+[![CircleCI](https://img.shields.io/circleci/project/pwasiewi/packer-proxmoxbeta.svg?maxAge=2592000)](https://circleci.com/gh/pwasiewi/packer-proxmoxbeta)
 
 packer template to build Ubuntu Server images
 
-vagrant images are available at [42n4/ubuntu](https://atlas.hashicorp.com/42n4/boxes/ubuntu).
+vagrant images are available at [42n4/proxmoxbeta](https://atlas.hashicorp.com/42n4/boxes/proxmoxbeta).
 
 ## Building Images
 
 To build images, simply run:
 
 ```
-git clone https://github.com/pwasiewi/packer-ubuntu
-cd packer-ubuntu
+git clone https://github.com/pwasiewi/packer-proxmoxbeta
+cd packer-proxmoxbeta
 export ATLAS_TOKEN=the token string taken from Atlas https://atlas.hashicorp.com/settings/tokens
-packer build template.json
+packer build -only=virtualbox-iso template.json
 ```
 
 If you want to build only virtualbox, vmware or qemu, but now only virtualbox one works with ceph.
@@ -30,7 +30,7 @@ Next, try to execute it in a new directory:
 ```
 #vagrant destroy -f #remove ALL previous instances
 vagrant box update  #update this box in order to make 3 hosts
-wget https://raw.githubusercontent.com/pwasiewi/packer-ubuntu/master/Vagrantfile.3hosts -O Vagrantfile
+wget https://raw.githubusercontent.com/pwasiewi/packer-proxmoxbeta/master/Vagrantfile.3hosts -O Vagrantfile
 sed -i 's/192.168.0/192.168.<your local net number>/g' Vagrantfile
 sed -i 's/enp0s31f6/eth0/g' Vagrantfile # you change the host bridge name if it is not 'enp0s31f6'
 #in MSWin it gives you names: VBoxManage.exe list bridgedifs
@@ -51,13 +51,21 @@ and execute:
 
 ```
 va_hosts4ssh server
-va_ceph_init
-va_ceph_create
-[ ! -d /mnt/mycephfs ] && mkdir /mnt/mycephfs
-mount -t ceph `ifconfig enp0s8 | grep inet\ | awk '{print $2}'`:6789:/ /mnt/mycephfs -o name=admin,secret=`cat /etc/ceph/ceph.client.admin.keyring | grep key | cut -f 2 | sed 's/key = //g'`
-#ceph disk tests, where -s file size in MB, -r RAM in MB (defaults: 8192 and all available memory)
-free && sync && echo 3 > /proc/sys/vm/drop_caches && free
-bonnie++ -s 2048 -r 1024 -u root -d /mnt/mycephfs -m BenchClient
+pvecm create kluster
+ssh server2 "pvecm add server1" && ssh server3 "pvecm add server1"
+ssh server2 "reboot" && ssh server3 "reboot"
+reboot
+pveceph init --network 192.168.2.0/24 #CHANGE TO YOUR NET
+ssh server2 "pveceph createmon" && ssh server3 "pveceph createmon" && ssh server1 "pveceph createmon"
+ssh server1 "ceph-disk zap /dev/sdb" && ssh server1 "pveceph createosd /dev/sdb" && ssh server1 "partprobe /dev/sdb1"
+ssh server2 "ceph-disk zap /dev/sdb" && ssh server2 "pveceph createosd /dev/sdb" && ssh server2 "partprobe /dev/sdb1"
+ssh server3 "ceph-disk zap /dev/sdb" && ssh server3 "pveceph createosd /dev/sdb" && ssh server3 "partprobe /dev/sdb1"
+cd /etc/pve/priv/
+mkdir ceph
+cp /etc/ceph/ceph.client.admin.keyring ceph/rbd.keyring
+ceph osd pool set rbd size 2     #replica number
+ceph osd pool set rbd min_size 1 #min replica number after e.g. server failure
+#add in GUI storage rbd with monitor hosts: 192.168.2.71 192.168.2.72 192.168.2.73 #CHANGE TO YOUR NET 
 ```
 
 ## Release setup
