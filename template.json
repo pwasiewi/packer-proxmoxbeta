@@ -2,7 +2,7 @@
   "variables": {
     "atlas_username": "42n4",
     "atlas_name": "proxmoxbeta",
-    "version": "0.1",
+    "version": "0.2",
     "iso_url": "https://www.proxmox.com/en/downloads?task=callelement&format=raw&item_id=322&element=f85c494b-2b32-4109-b8c1-083cca2b7db6&method=download&args[0]=3c018023c7aa81c9bed2d4497c702559",
     "iso_checksum": "a722c04a9c29a2c9d9407d288b93678e51456d1276c0eca5e84b9582a0fe44db",
     "iso_checksum_type": "sha256",

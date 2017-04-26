@@ -55,17 +55,23 @@ pvecm create kluster
 ssh server2 "pvecm add server1" && ssh server3 "pvecm add server1"
 ssh server2 "reboot" && ssh server3 "reboot"
 reboot
+ae "apt-get update"
+ae "apt-get install -y ceph"
+ae "apt-get dist-upgrade -y"
 pveceph init --network 192.168.2.0/24 #CHANGE TO YOUR NET
-ssh server2 "pveceph createmon" && ssh server3 "pveceph createmon" && ssh server1 "pveceph createmon"
-ssh server1 "ceph-disk zap /dev/sdb" && ssh server1 "pveceph createosd /dev/sdb" && ssh server1 "partprobe /dev/sdb1"
-ssh server2 "ceph-disk zap /dev/sdb" && ssh server2 "pveceph createosd /dev/sdb" && ssh server2 "partprobe /dev/sdb1"
-ssh server3 "ceph-disk zap /dev/sdb" && ssh server3 "pveceph createosd /dev/sdb" && ssh server3 "partprobe /dev/sdb1"
+for i in server1 server2 server3; do ssh $i "pveceph createmon"; done
+for i in server1 server2 server3; do ssh $i "ceph-disk zap /dev/sdb" && ssh $i "pveceph createosd /dev/sdb" && ssh $i "partprobe /dev/sdb1"; done
 cd /etc/pve/priv/
 mkdir ceph
 cp /etc/ceph/ceph.client.admin.keyring ceph/rbd.keyring
 ceph osd pool set rbd size 2     #replica number
 ceph osd pool set rbd min_size 1 #min replica number after e.g. server failure
 #add in GUI storage rbd with monitor hosts: 192.168.2.71 192.168.2.72 192.168.2.73 #CHANGE TO YOUR NET 
+cd
+ae "rm -f ~/interfaces && cp /usr/local/bin/va_interfaces ~/interfaces"
+for i in server1 server2 server3; do ssh $i "sed -i 's/192.168.2.71/'`grep $i /etc/hosts | awk  '{ print $1}'`'/g' ~/interfaces && cat ~/interfaces"; done && \
+ae "rm -f /etc/network/interfaces && cp ~/interfaces /etc/network/interfaces" && \
+ae "cat /etc/network/interfaces"
 ```
 
 ## Release setup
