@@ -52,8 +52,10 @@ and execute:
 ```
 va_hosts4ssh server
 pvecm create kluster
-ssh server2 "pvecm add server1" && ssh server3 "pvecm add server1"
-ssh server2 "reboot" && ssh server3 "reboot"
+ssh server2 "pvecm add server1" 
+ssh server3 "pvecm add server1"
+ssh server2 "reboot" 
+ssh server3 "reboot"
 reboot
 ae "apt-get update"
 ae "apt-get install -y ceph"
