@@ -66,6 +66,7 @@ for i in server1 server2 server3; do ssh $i "ceph-disk zap /dev/sdb" && ssh $i "
 cd /etc/pve/priv/
 mkdir ceph
 cp /etc/ceph/ceph.client.admin.keyring ceph/rbd.keyring
+cp /etc/ceph/ceph.client.admin.keyring ceph/ceph4vm.keyring
 ceph osd pool set rbd size 2     #replica number
 ceph osd pool set rbd min_size 1 #min replica number after e.g. server failure
 #add in GUI storage rbd with monitor hosts: 192.168.2.71 192.168.2.72 192.168.2.73 #CHANGE TO YOUR NET 
