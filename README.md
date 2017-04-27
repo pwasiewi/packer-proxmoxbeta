@@ -59,9 +59,13 @@ pvecm create kluster
 for i in server2 server3; do ssh $i "pvecm add server1"; done
 for i in server3 server2 server1; do ssh $i "reboot"; done
 ```
+
 `vagrant ssh server1`
 
+Login again: 
+
 ```
+sudo su -
 ae "apt-get update"
 ae "apt-get install -y ceph"
 ae "apt-get dist-upgrade -y"
@@ -75,7 +79,7 @@ cp /etc/ceph/ceph.client.admin.keyring ceph/ceph4vm.keyring
 ceph osd pool set rbd size 2     #replica number
 ceph osd pool set rbd min_size 1 #min replica number after e.g. server failure
 #add in GUI rdb storage named ceph4vm with monitor hosts: 192.168.2.71 192.168.2.72 192.168.2.73 #CHANGE TO YOUR NET 
-#korekta konfigów, mostek vmbr0 na drugiej karcie sieciowej
+#net configs are corrected, vmbr0 on the second nic2 
 cd
 ae "rm -f ~/interfaces && cp /usr/local/bin/va_interfaces ~/interfaces"
 for i in server1 server2 server3; do ssh $i "sed -i 's/192.168.2.71/'`grep $i /etc/hosts | awk  '{ print $1}'`'/g' ~/interfaces && cat ~/interfaces"; done && \
@@ -84,17 +88,25 @@ ae "cat /etc/network/interfaces"
 for i in server3 server2 server1; do ssh $i "reboot"; done
 ```
 
-`vagrant halt -f && vagrant up && vagrant ssh server1`
+`vagrant ssh server1`
+
+After reboot try to check if all servers and their ceph osds are up.
+
+Exit with `vagrant halt` but you can loose your files with `vagrant halt -f`
+
+Next time: `vagrant up && vagrant ssh server1`
 
 ```
-#ponowna korekta konfigów, gdyż sieć publiczna na drugiej karcie jest wstawiana 
-#do konfigu bez bridge'a
+#after vagrant up, again correct the net configs (removing vagrant public network settings)
+sudo su -
 ae "rm -f ~/interfaces && cp /usr/local/bin/va_interfaces ~/interfaces"
 for i in server1 server2 server3; do ssh $i "sed -i 's/192.168.2.71/'`grep $i /etc/hosts | awk  '{ print $1}'`'/g' ~/interfaces && cat ~/interfaces"; done && \
 ae "rm -f /etc/network/interfaces && cp ~/interfaces /etc/network/interfaces" && \
 ae "cat /etc/network/interfaces"
 for i in server3 server2 server1; do ssh $i "reboot"; done
 ```
+
+After reboot try to check if all servers and their ceph osds are up. Reset them until they are all up.
 
 ## Release setup
 
