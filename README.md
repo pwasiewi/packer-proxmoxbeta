@@ -2,7 +2,7 @@
 
 [![CircleCI](https://img.shields.io/circleci/project/pwasiewi/packer-proxmoxbeta.svg?maxAge=2592000)](https://circleci.com/gh/pwasiewi/packer-proxmoxbeta)
 
-packer template to build Ubuntu Server images
+packer template to build Proxmox Server images
 
 vagrant images are available at [42n4/proxmoxbeta](https://atlas.hashicorp.com/42n4/boxes/proxmoxbeta).
 
@@ -25,7 +25,7 @@ packer build -only=vmware-iso template.json
 packer build -only=qemu template.json
 ```
 
-Next, try to execute it in a new directory:  
+Next, try to execute it in a new directory in order to have the 3 server cluster:  
 
 ```
 #vagrant destroy -f #remove ALL previous instances
