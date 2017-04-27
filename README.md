@@ -52,11 +52,8 @@ and execute:
 ```
 va_hosts4ssh server
 pvecm create kluster
-ssh server2 "pvecm add server1" 
-ssh server3 "pvecm add server1"
-ssh server2 "reboot" 
-ssh server3 "reboot"
-reboot
+for i in server2 server3; do ssh $i "pvecm add server1"; done
+for i in server3 server2 server1; do ssh $i "reboot"; done
 ae "apt-get update"
 ae "apt-get install -y ceph"
 ae "apt-get dist-upgrade -y"
@@ -75,9 +72,8 @@ ae "rm -f ~/interfaces && cp /usr/local/bin/va_interfaces ~/interfaces"
 for i in server1 server2 server3; do ssh $i "sed -i 's/192.168.2.71/'`grep $i /etc/hosts | awk  '{ print $1}'`'/g' ~/interfaces && cat ~/interfaces"; done && \
 ae "rm -f /etc/network/interfaces && cp ~/interfaces /etc/network/interfaces" && \
 ae "cat /etc/network/interfaces"
+for i in server3 server2 server1; do ssh $i "reboot"; done
 ```
-
-`vagrant halt -f && vagrant up`
 
 ## Release setup
 
