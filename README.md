@@ -58,7 +58,7 @@ va_hosts4ssh server
 pvecm create kluster
 sleep 5
 for i in server2 server3; do ssh $i "pvecm add server1"; done
-for i in server3 server2 server1; do ssh $i "reboot"; done
+for i in server3 server2; do ssh $i "reboot"; done && reboot
 ```
 
 `vagrant ssh server1`
@@ -86,7 +86,7 @@ ae "rm -f ~/interfaces && cp /usr/local/bin/va_interfaces ~/interfaces"
 for i in server1 server2 server3; do ssh $i "sed -i 's/192.168.2.71/'`grep $i /etc/hosts | awk  '{ print $1}'`'/g' ~/interfaces && cat ~/interfaces"; done && \
 ae "rm -f /etc/network/interfaces && cp ~/interfaces /etc/network/interfaces" && \
 ae "cat /etc/network/interfaces"
-for i in server3 server2 server1; do ssh $i "reboot"; done
+for i in server3 server2; do ssh $i "reboot"; done && reboot
 ```
 
 `vagrant ssh server1`
@@ -104,7 +104,7 @@ ae "rm -f ~/interfaces && cp /usr/local/bin/va_interfaces ~/interfaces"
 for i in server1 server2 server3; do ssh $i "sed -i 's/192.168.2.71/'`grep $i /etc/hosts | awk  '{ print $1}'`'/g' ~/interfaces && cat ~/interfaces"; done && \
 ae "rm -f /etc/network/interfaces && cp ~/interfaces /etc/network/interfaces" && \
 ae "cat /etc/network/interfaces"
-for i in server3 server2 server1; do ssh $i "reboot"; done
+for i in server3 server2; do ssh $i "reboot"; done && reboot
 ```
 
 After reboot try to check if all servers and their ceph osds are up. Reset them until they are all up.
