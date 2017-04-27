@@ -25,13 +25,15 @@ packer build -only=vmware-iso template.json
 packer build -only=qemu template.json
 ```
 
-## Setting up the proxmox cluster
+## Setting up the proxmox cluster (START FOR BEGINNERS!)
 
-Next, try to execute it in a new directory in order to have the 3 server cluster:  
+Next (or HERE YOU START and use my image 42n4/promoxbeta without doing your own one), 
+try to execute it in a new directory in order to have the 3 server cluster:  
 
 ```
 #vagrant destroy -f #remove ALL previous instances
-vagrant box update  #update this box in order to make 3 hosts
+#vagrant box update #update this box in order to have my newest image
+mkdir vProxmox && cd vProxmox
 wget https://raw.githubusercontent.com/pwasiewi/packer-proxmoxbeta/master/Vagrantfile.3hosts -O Vagrantfile
 sed -i 's/192.168.0/192.168.<your local net number>/g' Vagrantfile
 sed -i 's/enp0s31f6/eth0/g' Vagrantfile # you change the host bridge name if it is not 'enp0s31f6'
