@@ -7,7 +7,7 @@ $bridge = "enp0s31f6"
 #$bridge="wlp3s0"
 #$box = "42n4/UbuntuServerYakkety"
 $box="42n4/proxmoxbeta"
-$net="192.168.2."
+$net="192.168.0."
 servers=[
   {
     :hostname => "server1",
