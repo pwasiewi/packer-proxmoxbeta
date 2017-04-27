@@ -56,6 +56,7 @@ and execute:
 ```
 va_hosts4ssh server
 pvecm create kluster
+sleep 5
 for i in server2 server3; do ssh $i "pvecm add server1"; done
 for i in server3 server2 server1; do ssh $i "reboot"; done
 ```
