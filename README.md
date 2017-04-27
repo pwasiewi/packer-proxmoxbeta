@@ -25,6 +25,8 @@ packer build -only=vmware-iso template.json
 packer build -only=qemu template.json
 ```
 
+## Setting up the proxmox cluster
+
 Next, try to execute it in a new directory in order to have the 3 server cluster:  
 
 ```
