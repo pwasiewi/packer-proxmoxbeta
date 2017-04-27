@@ -67,7 +67,19 @@ cp /etc/ceph/ceph.client.admin.keyring ceph/ceph4vm.keyring
 ceph osd pool set rbd size 2     #replica number
 ceph osd pool set rbd min_size 1 #min replica number after e.g. server failure
 #add in GUI rdb storage named ceph4vm with monitor hosts: 192.168.2.71 192.168.2.72 192.168.2.73 #CHANGE TO YOUR NET 
+#korekta konfigów, mostek vmbr0 na drugiej karcie sieciowej
 cd
+ae "rm -f ~/interfaces && cp /usr/local/bin/va_interfaces ~/interfaces"
+for i in server1 server2 server3; do ssh $i "sed -i 's/192.168.2.71/'`grep $i /etc/hosts | awk  '{ print $1}'`'/g' ~/interfaces && cat ~/interfaces"; done && \
+ae "rm -f /etc/network/interfaces && cp ~/interfaces /etc/network/interfaces" && \
+ae "cat /etc/network/interfaces"
+```
+
+`vagrant halt -f && vagrant up && vagrant ssh server1`
+
+```
+#ponowna korekta konfigów, gdyż sieć publiczna na drugiej karcie jest wstawiana 
+#do konfigu bez bridge'a
 ae "rm -f ~/interfaces && cp /usr/local/bin/va_interfaces ~/interfaces"
 for i in server1 server2 server3; do ssh $i "sed -i 's/192.168.2.71/'`grep $i /etc/hosts | awk  '{ print $1}'`'/g' ~/interfaces && cat ~/interfaces"; done && \
 ae "rm -f /etc/network/interfaces && cp ~/interfaces /etc/network/interfaces" && \
