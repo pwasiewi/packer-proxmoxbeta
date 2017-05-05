@@ -58,7 +58,8 @@ va_hosts4ssh server
 pvecm create kluster
 sleep 5
 for i in server2 server3; do ssh $i "pvecm add server1"; done
-for i in server3 server2; do ssh $i "reboot"; done && reboot
+for i in server3 server2; do ssh $i "reboot"; done
+reboot
 ```
 
 `vagrant ssh server1`
@@ -69,8 +70,7 @@ Login again:
 sudo su -
 ae "apt-get update"
 ae "apt-get install -y ceph"
-ae "apt-get dist-upgrade -y"
-pveceph init --network 192.168.2.0/24 #CHANGE TO YOUR NET
+pveceph init --network 192.168.<YOUR_NET>.0/24 #CHANGE TO YOUR NET
 for i in server1 server2 server3; do ssh $i "pveceph createmon"; done
 for i in server1 server2 server3; do ssh $i "ceph-disk zap /dev/sdb" && ssh $i "pveceph createosd /dev/sdb" && ssh $i "partprobe /dev/sdb1"; done
 cd /etc/pve/priv/
@@ -79,7 +79,7 @@ cp /etc/ceph/ceph.client.admin.keyring ceph/rbd.keyring
 cp /etc/ceph/ceph.client.admin.keyring ceph/ceph4vm.keyring
 ceph osd pool set rbd size 2     #replica number
 ceph osd pool set rbd min_size 1 #min replica number after e.g. server failure
-#add in GUI rdb storage named ceph4vm with monitor hosts: 192.168.2.71 192.168.2.72 192.168.2.73 #CHANGE TO YOUR NET 
+#add in GUI rdb storage named ceph4vm with monitor hosts: 192.168.<YOUR_NET>.71 192.168.<YOUR_NET>.72 192.168.<YOUR_NET>.73 #CHANGE TO YOUR NET 
 #net configs are corrected, vmbr0 on the second nic2 
 cd
 ae "rm -f ~/interfaces && cp /usr/local/bin/va_interfaces ~/interfaces"
