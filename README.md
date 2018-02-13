@@ -4,7 +4,7 @@
 
 packer template to build Proxmox Server images
 
-vagrant images are available at [42n4/proxmoxbeta](https://atlas.hashicorp.com/42n4/boxes/proxmoxbeta).
+vagrant images are available at [42n4/proxmoxbeta](https://app.vagrantup.com/42n4/boxes/proxmoxbeta).
 
 ## Building Images
 
@@ -13,7 +13,7 @@ To build images, simply run:
 ```
 git clone https://github.com/pwasiewi/packer-proxmoxbeta
 cd packer-proxmoxbeta
-export ATLAS_TOKEN=the token string taken from Atlas https://atlas.hashicorp.com/settings/tokens
+export VAGRANT_CLOUD_TOKEN=the token string taken from Vagrant https://app.vagrantup.com/settings/tokens
 packer build -only=virtualbox-iso template.json
 ```
 
@@ -111,27 +111,27 @@ After reboot try to check if all servers and their ceph osds are up. Reset them 
 
 ## Release setup
 
-Vagrant images at [Atlas](https://atlas.hashicorp.com) are released by [Circle CI](https://circleci.com/).
+Vagrant images at [Vagrant](https://app.vagrantup.com) are released by [Circle CI](https://circleci.com/).
 setup instructions are the following:
 
 1. Sign up
-  - [Atlas](https://atlas.hashicorp.com/account/new)
+  - [Vagrant](https://app.vagrantup.com/account/new)
   - [Circle CI](https://circleci.com/signup).
 2. Get API token
-  - [Atlas](https://atlas.hashicorp.com/settings/tokens)
+  - [Vagrant](https://app.vagrantup.com/settings/security)
   - [Circle CI](https://circleci.com/account/api)
-3. Create new build configuration at [Atlas](https://atlas.hashicorp.com/builds/new)
-  and [generate token](https://atlas.hashicorp.com/settings/tokens).
+3. Create new build configuration at [Vagrant](https://app.vagrantup.com/boxes/new)
+  and [generate token](https://app.vagrantup.com/settings/security).
 4. Create project at [Circle CI](https://circleci.com/add-projects)
-5. Add Atlas environment variables to Circle CI project:
+5. Add Vagrant environment variables to Circle CI project:
   
   ```console
-  $ ATLAS_TOKEN={{ your atlas api token here }}
+  $ VAGRANT_CLOUD_TOKEN={{ your vagrant api token here }}
   $ CIRCLE_USERNAME={{ your circle ci username here }}
   $ CIRCLE_PROJECT={{ your circle ci project here }}
   $ CIRCLE_TOKEN={{ your circle ci token here }}
   $ CIRCLE_ENVVARENDPOINT="https://circleci.com/api/v1/project/$CIRCLE_USERNAME/$CIRCLE_PROJECT/envvar?circle-token=$CIRCLE_TOKEN"
-  $ json="{\"name\":\"ATLAS_TOKEN\",\"value\":\"$ATLAS_TOKEN\"}"
+  $ json="{\"name\":\"VAGRANT_CLOUD_TOKEN\",\"value\":\"$VAGRANT_CLOUD_TOKEN\"}"
   $ curl -X POST -H "Content-Type: application/json" -H "Accept: application/json" -d "$json" "$CIRCLE_ENVVARENDPOINT"
   ```
   
