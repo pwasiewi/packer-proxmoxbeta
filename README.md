@@ -81,6 +81,7 @@ ceph osd pool create rbd 128     #create pool if not present
 ceph osd pool set rbd size 2     #replica number
 ceph osd pool set rbd min_size 1 #min replica number after e.g. server failure
 ceph osd pool application enable rbd rbd
+rbd pool init rbd
 #GUI proxmox in a host browser: https://192.168.<YOUR_NET>.71:8006
 #add in GUI rdb storage named ceph4vm with monitor hosts: 192.168.<YOUR_NET>.71 192.168.<YOUR_NET>.72 192.168.<YOUR_NET>.73 #CHANGE TO YOUR NET 
 #it should be added automatically
