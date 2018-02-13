@@ -54,7 +54,7 @@ sudo su -
 and execute:
 
 ```
-va_hosts4ssh server
+va_hosts4ssh server  #password: packer
 pvecm create kluster
 sleep 5
 for i in server2 server3; do ssh $i "pvecm add server1"; done
