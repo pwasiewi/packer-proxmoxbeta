@@ -1,10 +1,11 @@
 {
   "variables": {
-    "atlas_username": "42n4",
-    "atlas_name": "proxmoxbeta",
+    "vagrant_username": "42n4",
+    "vagrant_name": "proxmoxbeta",
+    "cloud_token": "{{ env `VAGRANT_CLOUD__TOKEN` }}",
     "version": "0.4",
-    "iso_url": "https://www.proxmox.com/en/downloads?task=callelement&format=raw&item_id=356&element=f85c494b-2b32-4109-b8c1-083cca2b7db6&method=download&args[0]=6b7b7bce45495f89b0ecde346211cc17",
-    "iso_checksum": "58006a1cf84fd8708bf5eaf34265ac45dc856b4608bcf13f2bc2a0679d288667",
+    "iso_url": "https://www.proxmox.com/en/downloads?task=callelement&format=raw&item_id=379&element=f85c494b-2b32-4109-b8c1-083cca2b7db6&method=download&args[0]=d5904111a4bd297c0dcf04db34cadc00",
+    "iso_checksum": "acddd24bd7941bc696cbfd23af4801427b1e6a5b4ece284c3a73ab5a103dd448",
     "iso_checksum_type": "sha256",
     "boot_wait": "5s",
     "disk_size": "32768",
@@ -23,11 +24,11 @@
     {
       "type": "virtualbox-iso",
       "guest_os_type": "Debian_64",
-      "vm_name": "{{user `atlas_name`}}",
+      "vm_name": "{{user `vagrant_name`}}",
       "iso_url": "{{user `iso_url`}}",
       "iso_checksum": "{{user `iso_checksum`}}",
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
-      "boot_command": "<enter><wait10><wait10><wait10><wait10><enter><wait><enter><wait>Poland<tab><tab><tab><enter>{{ user `ssh_password`}}<tab>{{ user `ssh_password`}}<tab>{{ user `email`}}<tab><enter>{{ user `hostname`}}.{{user `domain`}}<tab><tab><tab><tab><tab><enter><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><enter><enter>",
+      "boot_command": "<wait10><enter><wait10><wait10><wait10><wait10><enter><enter><wait10><enter><wait10>Poland<wait><tab><tab><tab><tab><enter>{{ user `ssh_password`}}<tab>{{ user `ssh_password`}}<tab>{{ user `email`}}<tab><enter>{{ user `hostname`}}.{{user `domain`}}<tab><tab><tab><tab><tab><enter><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><wait10><enter><enter>",
       "boot_wait": "{{user `boot_wait`}}",
       "disk_size": "{{user `disk_size`}}",
       "http_directory": "http",
@@ -40,15 +41,15 @@
 	[ "modifyvm", "{{.Name}}", "--memory", "2560" ],
       	[ "modifyvm", "{{.Name}}", "--cpus", "2" ],
         [ "modifyvm", "{{.Name}}", "--vram", "128"],
-    	[ "createhd", "--format", "VMDK", "--filename", "{{user `vm_dir`}}/{{user `atlas_name`}}/{{user `atlas_name`}}_2.vmdk", "--variant", "STREAM", "--size", "8192" ],
+    	[ "createhd", "--format", "VMDK", "--filename", "{{user `vm_dir`}}/{{user `vagrant_name`}}/{{user `vagrant_name`}}_2.vmdk", "--variant", "STREAM", "--size", "8192" ],
 	[ "storagectl", "{{.Name}}", "--name", "SATA Controller", "--add", "sata", "--controller", "IntelAHCI"],
-    	[ "storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "{{user `vm_dir`}}/{{user `atlas_name`}}/{{user `atlas_name`}}_2.vmdk" ]
+    	[ "storageattach", "{{.Name}}", "--storagectl", "SATA Controller", "--port", "1", "--type", "hdd", "--medium", "{{user `vm_dir`}}/{{user `vagrant_name`}}/{{user `vagrant_name`}}_2.vmdk" ]
       ]
     },
     {
       "type": "vmware-iso",
       "guest_os_type": "ubuntu-64",
-      "vm_name": "{{user `atlas_name`}}",
+      "vm_name": "{{user `vagrant_name`}}",
       "iso_url": "{{user `iso_url`}}",
       "iso_checksum": "{{user `iso_checksum`}}",
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
@@ -64,7 +65,7 @@
     },
     {
       "type": "qemu",
-      "vm_name": "{{user `atlas_name`}}",
+      "vm_name": "{{user `vagrant_name`}}",
       "iso_url": "{{user `iso_url`}}",
       "iso_checksum": "{{user `iso_checksum`}}",
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
@@ -105,39 +106,15 @@
         "keep_input_artifact": false
       },
       {
-        "type": "atlas",
-        "only": ["vmware-iso"],
-        "artifact": "{{user `atlas_username`}}/{{user `atlas_name`}}",
-        "artifact_type": "vagrant.box",
-        "metadata": {
-          "provider": "vmware_desktop",
-          "version": "{{user `version`}}"
-        }
-      },
-      {
-        "type": "atlas",
-        "only": ["qemu"],
-        "artifact": "{{user `atlas_username`}}/{{user `atlas_name`}}",
-        "artifact_type": "vagrant.box",
-        "metadata": {
-          "provider": "libvirt",
-          "version": "{{user `version`}}"
-        }
-      },
-      {
-        "type": "atlas",
+        "type": "vagrant-cloud",
         "only": ["virtualbox-iso"],
-        "artifact": "{{user `atlas_username`}}/{{user `atlas_name`}}",
-        "artifact_type": "vagrant.box",
-        "metadata": {
-          "provider": "virtualbox",
-          "version": "{{user `version`}}"
-        }
+        "box_tag": "{{user `vagrant_username`}}/{{user `vagrant_name`}}",
+        "version": "{{user `version`}}"
       }
     ]
   ],
   "push": {
-    "name": "{{user `atlas_username`}}/{{user `atlas_name`}}",
+    "name": "{{user `vagrant_username`}}/{{user `vagrant_name`}}",
     "vcs": true
   }
 }
