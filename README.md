@@ -77,6 +77,8 @@ cd /etc/pve/priv/
 mkdir ceph
 cp /etc/ceph/ceph.client.admin.keyring ceph/rbd.keyring
 cp /etc/ceph/ceph.client.admin.keyring ceph/ceph4vm.keyring
+ceph -s                          #ceph should be online
+ceph osd pool create rbd 128     #create pool if not present
 ceph osd pool set rbd size 2     #replica number
 ceph osd pool set rbd min_size 1 #min replica number after e.g. server failure
 #add in GUI rdb storage named ceph4vm with monitor hosts: 192.168.<YOUR_NET>.71 192.168.<YOUR_NET>.72 192.168.<YOUR_NET>.73 #CHANGE TO YOUR NET 
