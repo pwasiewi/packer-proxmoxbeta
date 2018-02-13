@@ -3,7 +3,7 @@
     "vagrant_username": "42n4",
     "vagrant_name": "proxmoxbeta",
     "cloud_token": "{{ env `VAGRANT_CLOUD__TOKEN` }}",
-    "version": "0.4",
+    "version": "0.5",
     "iso_url": "https://www.proxmox.com/en/downloads?task=callelement&format=raw&item_id=379&element=f85c494b-2b32-4109-b8c1-083cca2b7db6&method=download&args[0]=d5904111a4bd297c0dcf04db34cadc00",
     "iso_checksum": "acddd24bd7941bc696cbfd23af4801427b1e6a5b4ece284c3a73ab5a103dd448",
     "iso_checksum_type": "sha256",
