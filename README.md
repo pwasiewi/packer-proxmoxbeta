@@ -4,7 +4,7 @@
 
 packer template to build Proxmox Server images
 
-vagrant images are available at [42n4/proxmoxbeta](https://app.vagrantup.com/42n4/boxes/proxmoxbeta).
+vagrant images are available at the [42n4 vagrant account](https://app.vagrantup.com/42n4/boxes/proxmoxbeta).
 
 ## Building Images
 
