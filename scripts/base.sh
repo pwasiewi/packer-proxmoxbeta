@@ -20,8 +20,8 @@ echo "deb http://security.debian.org stretch/updates main contrib" >> /etc/apt/s
 echo "deb http://download.proxmox.com/debian stretch pve-no-subscription" >> /etc/apt/sources.list
 echo "deb http://download.proxmox.com/debian stretch pvetest" >> /etc/apt/sources.list
 sed -i 's/^deb/#deb/g' /etc/apt/sources.list.d/pve-enterprise.list
-wget -O - http://download.gluster.org/pub/gluster/glusterfs/3.11/rsa.pub | apt-key add -
-echo deb [arch=amd64] http://download.gluster.org/pub/gluster/glusterfs/3.11/LATEST/Debian/stretch/apt stretch main > /etc/apt/sources.list.d/gluster.list
+wget -O - http://download.gluster.org/pub/gluster/glusterfs/5/rsa.pub | apt-key add -
+echo deb [arch=amd64] http://download.gluster.org/pub/gluster/glusterfs/5/LATEST/Debian/stretch/amd64/apt stretch main > /etc/apt/sources.list.d/gluster.list
 apt-get update
 apt-get install -y locales dirmngr
 sed -i 's/^# pl_PL.UTF/pl_PL.UTF/g' /etc/locale.gen && locale-gen 
