@@ -41,9 +41,13 @@ sed -i 's/enp0s31f6/eth0/g' Vagrantfile # you change the host bridge name if it 
 #:bridge => "Intel(R) Ethernet Connection (2) I219-V",
 vagrant up
 vagrant ssh server1
-#in windows: https://www.sitepoint.com/getting-started-vagrant-windows/
-#you use putty after converting with puttygen a vagrant openssh key to a putty key
 ```
+
+### In M$Windows: https://www.sitepoint.com/getting-started-vagrant-windows/ - you use putty after converting with puttygen a vagrant openssh key to a putty key
+
+![Screen](https://github.com/pwasiewi/packer-proxmox/blob/master/picture/win10connectionwithvagranthost.png)
+
+
 
 Login to the server1 root account 
 
