@@ -45,7 +45,7 @@ vagrant ssh server1
 
 ### In M$Windows: https://www.sitepoint.com/getting-started-vagrant-windows/ - you use putty after converting with puttygen a vagrant openssh key to a putty key
 
-![Screen](https://github.com/pwasiewi/packer-proxmox/blob/master/picture/win10connectionwithvagranthost.png)
+![Screen](https://github.com/pwasiewi/packer-proxmoxbeta/blob/master/picture/win10connectionwithvagranthost.png)
 
 
 
