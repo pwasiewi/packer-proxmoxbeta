@@ -13,7 +13,7 @@ To build images, simply run:
 ```
 git clone https://github.com/pwasiewi/packer-proxmoxbeta
 cd packer-proxmoxbeta
-export VAGRANT_CLOUD_TOKEN=the token string taken from Vagrant https://app.vagrantup.com/settings/tokens
+export VAGRANT_CLOUD_TOKEN=the token string taken from Vagrant https://app.vagrantup.com/settings/security
 packer build -only=virtualbox-iso template.json
 ```
 
